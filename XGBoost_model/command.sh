@@ -1,0 +1,1 @@
+pyinstaller --onefile main.py --add-binary="D:\\VSCode Projects\\MAS\\XGBoost_model\\venv\\Lib\\site-packages\\xgboost\\lib\\xgboost.dll;xgboost\\lib" --add-data="D:\VSCode Projects\MAS\XGBoost_model\venv\Lib\site-packages\xgboost\VERSION;xgboost"
