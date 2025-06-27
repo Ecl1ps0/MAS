@@ -1,14 +1,22 @@
 package com.prod_mas.utils;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 
 public class ModelTrainer {
     @SuppressWarnings("CallToPrintStackTrace")
-    public void startTraining(String modelScriptPath) {
+    public void startTraining(String url) {
         try {
-            ProcessBuilder pb = new ProcessBuilder(modelScriptPath);
+            String filePath = this.getFilePath(url);
+            if (filePath.isEmpty()) {
+                throw new Exception("The File path is empty!");
+            }
+
+            ProcessBuilder pb = new ProcessBuilder(filePath);
             pb.redirectErrorStream();
             Process p = pb.start();
 
@@ -24,8 +32,39 @@ public class ModelTrainer {
             } else {
                 System.err.println("Training failed with exit code: " + exitCode);
             }
-        } catch (IOException | InterruptedException e) {
+
+            File file = new File(filePath);
+            if (!file.delete()) {
+                throw new Exception("Fail to delete exe file!");
+            }
+        } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @SuppressWarnings("CallToPrintStackTrace")
+    private String getFilePath(String urlFile) {
+        try {
+            String fileExtension = urlFile.substring(urlFile.lastIndexOf('.'));
+            Path tempFile = Files.createTempFile("downloaded_", fileExtension);
+
+            URL downloadUrl = new URL(urlFile);
+            HttpURLConnection connection = (HttpURLConnection) downloadUrl.openConnection();
+            int responseCode = connection.getResponseCode();
+
+            if (responseCode != 200) {
+                throw new IOException("Failed to download file. HTTP code: " + responseCode);
+            }
+
+            try (InputStream in = connection.getInputStream()) {
+                Files.copy(in, tempFile, StandardCopyOption.REPLACE_EXISTING);
+            }
+
+            return tempFile.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return "";
     }
 }

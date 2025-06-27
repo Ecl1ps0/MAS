@@ -12,7 +12,7 @@ public class Scheduler extends Agent {
             public void action() {
                 ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
                 msg.addReceiver(getAID("worker"));
-                msg.setContent("start-training");
+                msg.setContent("http://localhost:8080/files/main.exe");
                 send(msg);
                 System.out.println("Sent training request to worker.");
             }

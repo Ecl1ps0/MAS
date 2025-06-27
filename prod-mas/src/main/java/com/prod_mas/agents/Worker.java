@@ -10,9 +10,8 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 
-public class Worker extends Agent{
+public class Worker extends Agent {
     final private ModelTrainer trainer = new ModelTrainer();
-    final private String modelPath = "D:\\VSCode Projects\\MAS\\prod-mas\\src\\main\\java\\com\\prod_mas\\ml_model\\main.exe";
 
     @Override
     @SuppressWarnings("CallToPrintStackTrace")
@@ -34,8 +33,8 @@ public class Worker extends Agent{
             @Override
             public void action() {
                 ACLMessage msg = receive();
-                if (msg != null && "start-training".equals(msg.getContent())) {
-                    trainer.startTraining(modelPath);
+                if (msg != null) {
+                    trainer.startTraining(msg.getContent());
                 } else {
                     block();
                 }
